@@ -12,7 +12,6 @@ import model.products.Shoe;
 import service.ProductService;
 import service.UserService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,21 +19,16 @@ import java.util.Scanner;
  * @author Negin Mousavi
  */
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
     static UserService userService;
     static ProductService productService;
 
     static {
-        try {
-            userService = new UserService();
-            productService = new ProductService();
-        } catch (SQLException | ClassNotFoundException throwable) {
-            throwable.printStackTrace();
-        }
+        userService = new UserService();
+        productService = new ProductService();
     }
 
-    private static final Scanner scanner = new Scanner(System.in);
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         init();
         welcome();
         printStar();
@@ -52,7 +46,7 @@ public class Main {
         userService.initAdmin();
     }
 
-    private static void login(User user) throws SQLException, ClassNotFoundException, InterruptedException {
+    private static void login(User user) throws InterruptedException {
         int tryToEnterCorrectPass = 0;
         while (true) {
             System.out.print("Enter your password: ");
@@ -76,7 +70,7 @@ public class Main {
         }
     }
 
-    private static void showAdminMenu() throws InterruptedException, SQLException, ClassNotFoundException {
+    private static void showAdminMenu() throws InterruptedException {
         System.out.println("*** ADMIN MENU ***");
         int choice;
         choices:
@@ -124,7 +118,7 @@ public class Main {
 
     }
 
-    private static void removeProduct() throws InterruptedException, SQLException, ClassNotFoundException {
+    private static void removeProduct() throws InterruptedException {
         System.out.print("which type of product do you wanna remove? 1.electronic device 2.readable item 3.shoe \nenter the number: ");
         int productType = getIntegerInputAndHandleExceptionForAndReturnIt();
         scanner.nextLine();
@@ -144,13 +138,13 @@ public class Main {
         }
     }
 
-    private static Product getRemovingProduct(String tableName) throws InterruptedException, SQLException, ClassNotFoundException {
+    private static Product getRemovingProduct(String tableName) throws InterruptedException {
         System.out.print("enter the id: ");
         int id = getIntegerInputAndHandleExceptionForAndReturnIt();
         return productService.findProductById(tableName, id);
     }
 
-    private static void removeElectronicProduct() throws InterruptedException, SQLException, ClassNotFoundException {
+    private static void removeElectronicProduct() throws InterruptedException {
         ElectronicDevice electronicDevice = (ElectronicDevice) getRemovingProduct("ElectronicDevice");
         if (electronicDevice == null)
             System.out.println("we have n't this product");
@@ -159,7 +153,7 @@ public class Main {
         }
     }
 
-    private static void removeReadableProduct() throws InterruptedException, SQLException, ClassNotFoundException {
+    private static void removeReadableProduct() throws InterruptedException {
         ReadableItem readableItem = (ReadableItem) getRemovingProduct("ReadableItem");
         if (readableItem == null)
             System.out.println("we have n't this product");
@@ -168,7 +162,7 @@ public class Main {
         }
     }
 
-    private static void removeShoeProduct() throws InterruptedException, SQLException, ClassNotFoundException {
+    private static void removeShoeProduct() throws InterruptedException {
         Shoe shoe = (Shoe) getRemovingProduct("Shoe");
         if (shoe == null)
             System.out.println("we have n't this product");
@@ -177,14 +171,14 @@ public class Main {
         }
     }
 
-    private static void showAllUsers() throws SQLException {
+    private static void showAllUsers() {
         List<User> users = userService.returnAllUsers();
         for (User user : users) {
             System.out.println(user);
         }
     }
 
-    private static void addNewProduct() throws InterruptedException, SQLException {
+    private static void addNewProduct() throws InterruptedException {
         System.out.print("which product do you wanna add? 1.electronic device 2.readable item 3.shoe \nenter the number: ");
         int productType = getIntegerInputAndHandleExceptionForAndReturnIt();
         scanner.nextLine();
@@ -204,7 +198,7 @@ public class Main {
         }
     }
 
-    private static void addNewElectronicProduct() throws InterruptedException, SQLException {
+    private static void addNewElectronicProduct() throws InterruptedException {
         BrandOfDevice brandOfDevice;
         do {
             try {
@@ -225,7 +219,7 @@ public class Main {
         productService.addNewElectronicProduct(new ElectronicDevice(count, cost, brandOfDevice));
     }
 
-    private static void addNewReadableProduct() throws InterruptedException, SQLException {
+    private static void addNewReadableProduct() throws InterruptedException {
         TypeOfReadableItem typeOfReadableItem;
         do {
             try {
@@ -249,7 +243,7 @@ public class Main {
         productService.addNewReadableProduct(new ReadableItem(count, cost, countOfPages, typeOfReadableItem));
     }
 
-    private static void addNewShoeProduct() throws InterruptedException, SQLException {
+    private static void addNewShoeProduct() throws InterruptedException {
         TypeOfShoe typeOfShoe;
         do {
             try {
@@ -277,7 +271,7 @@ public class Main {
         productService.addNewShoeProduct(new Shoe(count, cost, sizeOfShoe, color, typeOfShoe));
     }
 
-    private static void showUserMenu(User user) throws SQLException, ClassNotFoundException, InterruptedException {
+    private static void showUserMenu(User user) throws InterruptedException {
         System.out.println("*** USER MENU ***");
         int choice;
         choices:
@@ -351,7 +345,7 @@ public class Main {
         return input;
     }
 
-    private static void confirmOrders(User user) throws SQLException, InterruptedException {
+    private static void confirmOrders(User user) throws InterruptedException {
         System.out.println("here is your list:");
         showCarts(returnNotCompletedCart(user));
         getTotalPriceOfCartsForThisUser(user);
@@ -377,7 +371,7 @@ public class Main {
         System.out.println("Done :)");
     }
 
-    private static void showYourCarts(User user) throws SQLException {
+    private static void showYourCarts(User user) {
         List<Cart> notCompletedCart = returnNotCompletedCart(user);
         List<Cart> completedCart = returnCompletedCart(user);
         System.out.println("your past products sold:");
@@ -390,11 +384,11 @@ public class Main {
         }
     }
 
-    private static List<Cart> returnCompletedCart(User user) throws SQLException {
+    private static List<Cart> returnCompletedCart(User user) {
         return userService.accessToCartService().getCompletedCart(user);
     }
 
-    private static void getTotalPriceOfCartsForThisUser(User user) throws SQLException {
+    private static void getTotalPriceOfCartsForThisUser(User user) {
         List<Cart> productsSold = returnNotCompletedCart(user);
         System.out.println("the total cost is: " + calTotalCost(productsSold));
     }
@@ -408,7 +402,7 @@ public class Main {
         return totalCost;
     }
 
-    private static void removeItemFromCart(User user) throws SQLException, InterruptedException, ClassNotFoundException {
+    private static void removeItemFromCart(User user) throws InterruptedException {
         List<Cart> productsSold = returnNotCompletedCart(user);
         showCarts(productsSold);
         int numberToRemove;
@@ -431,7 +425,7 @@ public class Main {
             throw new UserInputValidation("invalid input");
     }
 
-    private static void removeCart(Cart cart) throws SQLException, ClassNotFoundException {
+    private static void removeCart(Cart cart) {
         userService.accessToCartService().removeCart(cart);
     }
 
@@ -441,11 +435,11 @@ public class Main {
         }
     }
 
-    private static List<Cart> returnNotCompletedCart(User user) throws SQLException {
+    private static List<Cart> returnNotCompletedCart(User user) {
         return userService.accessToCartService().getNotCompletedCart(user);
     }
 
-    private static void addNewProductToCart(User user) throws SQLException, ClassNotFoundException, InterruptedException {
+    private static void addNewProductToCart(User user) throws InterruptedException {
         int count = userService.findCountOfItemsInUserCart(user);
         if (count < 5) {
             System.out.printf("your cart has %o items so you can add %o items%n", count, (5 - count));
@@ -510,7 +504,7 @@ public class Main {
         return getIntegerInputAndHandleExceptionForAndReturnIt();
     }
 
-    private static void register(String username) throws SQLException {
+    private static void register(String username) {
         System.out.print("you are not register yet.");
         String answer = "";
         while (!answer.equalsIgnoreCase("n")) {

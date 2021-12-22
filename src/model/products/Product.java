@@ -14,27 +14,17 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private int id;
     protected int count;
     protected double cost;
     @Enumerated(value = EnumType.STRING)
     protected TypeOfProducts typeOfProducts;
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private int id;
 
     public Product(int count, double cost) {
         this.count = count;
         this.cost = cost;
-    }
-
-    public Product(int id, int count, double cost) {
-        this(count, cost);
-        this.id = id;
-    }
-
-    public Product(int id, int count, double cost, TypeOfProducts typeOfProducts) {
-        this(id, count, cost);
-        this.typeOfProducts = typeOfProducts;
     }
 
     @Override

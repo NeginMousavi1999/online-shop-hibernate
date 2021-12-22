@@ -5,7 +5,6 @@ import model.enums.UserRole;
 import model.person.Address;
 import model.person.User;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -15,18 +14,15 @@ public class UserService {
     UserDao userDao = new UserDao();
     CartService cartService = new CartService();
 
-    public UserService() throws SQLException, ClassNotFoundException {
-    }
-
-    public User findUserByUsername(String username) throws SQLException {
+    public User findUserByUsername(String username) {
         return userDao.findByUsername(username);
     }
 
-    public void addNewUser(User user) throws SQLException {
+    public void addNewUser(User user) {
         userDao.create(user);
     }
 
-    public int findCountOfItemsInUserCart(User user) throws SQLException {
+    public int findCountOfItemsInUserCart(User user) {
         return cartService.findCountOfItemsByUserId(user.getId());
     }
 
@@ -34,13 +30,13 @@ public class UserService {
         return cartService;
     }
 
-    public List<User> returnAllUsers() throws SQLException {
+    public List<User> returnAllUsers() {
         return userDao.readAll();
     }
 
     public void initAdmin() {
         User admin = userDao.getAdmin();
-        if (admin==null)
+        if (admin == null)
             createAdmin();
     }
 

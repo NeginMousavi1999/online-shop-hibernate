@@ -36,11 +36,6 @@ public class User {
         this.userRole = userRole;
     }
 
-    public User(int id, String username, String password, Address address, UserRole userRole) {
-        this(username, password, address, userRole);
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "User{" +

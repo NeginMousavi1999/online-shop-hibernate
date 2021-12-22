@@ -29,13 +29,6 @@ public class ReadableItem extends Product {
         typeOfProducts = TypeOfProducts.READABLE_ITEMS;
     }
 
-    public ReadableItem(int id, int count, double cost, int countOfPages, TypeOfReadableItem typeOfReadableItem) {
-        super(id, count, cost);
-        this.countOfPages = countOfPages;
-        this.typeOfReadableItem = typeOfReadableItem;
-        typeOfProducts = TypeOfProducts.READABLE_ITEMS;
-    }
-
     @Override
     public String toString() {
         return "ReadableItem{" +

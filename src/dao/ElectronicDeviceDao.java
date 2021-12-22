@@ -4,15 +4,10 @@ import model.products.ElectronicDevice;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.sql.SQLException;
-
 /**
  * @author Negin Mousavi
  */
 public class ElectronicDeviceDao extends ProductsDao {
-    public ElectronicDeviceDao() throws ClassNotFoundException, SQLException {
-    }
-
     public void create(ElectronicDevice electronicDevice) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();

@@ -5,16 +5,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * @author Negin Mousavi
  */
 public class UserDao extends BaseDao {
-    public UserDao() throws ClassNotFoundException, SQLException {
-    }
-
     public User findByUsername(String username) {
         Session session = sessionFactory.openSession();
         List<User> result;

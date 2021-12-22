@@ -9,7 +9,6 @@ import model.products.Product;
 import model.products.ReadableItem;
 import model.products.Shoe;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,32 +20,25 @@ public class ProductService {
     ShoeDao shoeDao = new ShoeDao();
     ElectronicDeviceDao electronicDeviceDao = new ElectronicDeviceDao();
 
-    public ProductService() throws SQLException, ClassNotFoundException {
-    }
-
     public List<Product> returnAllProducts() {
-
         List<Product> products = new ArrayList<>();
         products.addAll(electronicDeviceDao.readAll("ElectronicDevice"));
         products.addAll(shoeDao.readAll("Shoe"));
         products.addAll(readableItemDao.readAll("ReadableItem"));
-
         return products;
     }
 
-    public void reduceTheCountOfProduct(Product product, int count) throws SQLException, ClassNotFoundException {
-        returnProductsDao().reduceTheCountOfProduct(product, count);
+    public void increaseTheCountOfProduct(Product product, int count) {
+        int newCount = product.getCount() + count;
+        product.setCount(newCount);
+        returnProductsDao().increaseTheCountOfProduct(product);
     }
 
-    public void increaseTheCountOfProduct(Product product, int count) throws SQLException, ClassNotFoundException {
-        returnProductsDao().increaseTheCountOfProduct(product, count);
-    }
-
-    public Product findProductById(String tableName, int id) throws SQLException, ClassNotFoundException {
+    public Product findProductById(String tableName, int id) {
         return returnProductsDao().findById(tableName, id);
     }
 
-    public ProductsDao returnProductsDao() throws SQLException, ClassNotFoundException {
+    public ProductsDao returnProductsDao() {
         return new ProductsDao() {
         };
     }

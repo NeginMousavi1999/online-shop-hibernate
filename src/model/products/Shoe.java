@@ -29,14 +29,6 @@ public class Shoe extends Product {
         typeOfProducts = TypeOfProducts.SHOES;
     }
 
-    public Shoe(int id, int count, double cost, int sizeOfShoe, String color, TypeOfShoe typeOfShoe) {
-        super(id, count, cost);
-        this.sizeOfShoe = sizeOfShoe;
-        this.color = color;
-        this.typeOfShoe = typeOfShoe;
-        typeOfProducts = TypeOfProducts.SHOES;
-    }
-
     @Override
     public String toString() {
         return "Shoe{" +

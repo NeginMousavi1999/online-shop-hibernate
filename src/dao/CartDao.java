@@ -2,35 +2,29 @@ package dao;
 
 import model.Cart;
 import model.enums.CartStatus;
-import model.enums.TypeOfProducts;
 import model.person.User;
-import model.products.Product;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.query.Query;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Negin Mousavi
  */
 public class CartDao extends BaseDao {
-    public CartDao() throws ClassNotFoundException, SQLException {
-    }
 
-    public int findCountOfItemsByUserId(int id) throws SQLException {
-        int count = 0;
-        if (connection != null) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM carts where user_id_fk=? AND status=\"NOT_COMPLETED\";");
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next())
-                count++;
-        }
-        return count;
+    public int findCountOfItemsByUserId(int id) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(Cart.class, "c");
+        SimpleExpression userIdCond = Restrictions.eq("c.user.id", id);
+        criteria.add(userIdCond);
+        criteria.setProjection(Projections.rowCount());
+        return (Integer) criteria.uniqueResult();
     }
 
     public void create(Cart cart) {
@@ -43,29 +37,20 @@ public class CartDao extends BaseDao {
         session.close();
     }
 
-    public Cart createCartAndReturn(ResultSet resultSet, CartStatus cartStatus) throws SQLException {
-//        List<Product> products = new ArrayList<>();
-        Product product = new Product(resultSet.getInt(5), resultSet.getInt(3), resultSet.getDouble(4),
-                TypeOfProducts.valueOf(resultSet.getString(2)));
-//        products.add(e);
-        return new Cart(resultSet.getInt(1), product, cartStatus);
+    public List<Cart> getCartsByStatus(User user, CartStatus cartStatus) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        String hql = "from Cart c where c.user.id=:userId and c.cartStatus=:cartStatus";
+        Query<Cart> query = session.createQuery(hql, Cart.class);
+        query.setParameter("userId", user.getId());
+        query.setParameter("cartStatus", cartStatus);
+        List<Cart> list = query.list();
+        transaction.commit();
+        session.close();
+        return list;
     }
 
-    public List<Cart> getCartsByStatus(User user, CartStatus cartStatus) throws SQLException {
-        List<Cart> soldList = new ArrayList<>();
-        if (connection != null) {
-            String sql = "SELECT id, product_type, count, cost, product_id_fk FROM carts WHERE user_id_fk=? AND status=?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setString(2, cartStatus.toString());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next())
-                soldList.add(createCartAndReturn(resultSet, cartStatus));
-        }
-        return soldList;
-    }
-
-    public void remove(Cart cart) throws SQLException {
+    public void remove(Cart cart) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         session.remove(cart);
@@ -73,12 +58,13 @@ public class CartDao extends BaseDao {
         session.close();
     }
 
-    public void updateStatus(User user) throws SQLException {
-        if (connection != null) {
-            String sql = "UPDATE carts SET status=\"COMPLETED\" WHERE user_id_fk=?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.executeUpdate();
+    public void updateStatus(List<Cart> carts) {
+        for (Cart cart : carts) {
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+            session.merge(cart);
+            transaction.commit();
+            session.close();
         }
     }
 }

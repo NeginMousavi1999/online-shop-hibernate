@@ -19,6 +19,7 @@ public class Address {
     private String postalCode;
     @OneToOne(mappedBy = "address")
     private User user;
+
     public Address(String postalCode) {
         this.postalCode = postalCode;
     }

@@ -27,12 +27,6 @@ public class ElectronicDevice extends Product {
         typeOfProducts = TypeOfProducts.ELECTRONIC_DEVICES;
     }
 
-    public ElectronicDevice(int id, int count, double cost, BrandOfDevice brandOfDevice) {
-        super(id, count, cost);
-        this.brandOfDevice = brandOfDevice;
-        typeOfProducts = TypeOfProducts.ELECTRONIC_DEVICES;
-    }
-
     @Override
     public String toString() {
         return "ElectronicDevice{" +
