@@ -2,7 +2,7 @@ package model.person;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import model.ProductSold;
+import model.Cart;
 import model.enums.UserRole;
 
 import javax.persistence.*;
@@ -14,15 +14,14 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "user_tbl")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String username;
     private String password;
-    @Transient
-    private List<ProductSold> productSold;
+    @OneToOne
+    private Cart cart;
     @OneToOne
     private Address address;
     @Enumerated(EnumType.STRING)
@@ -48,7 +47,7 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", productSold=" + productSold +
+                ", productSold=" + cart +
                 ", userRole=" + userRole +
                 '}';
     }

@@ -9,12 +9,16 @@
         <property name="connection.username">root</property>
         <property name="connection.password">123456</property>
         <property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
-        <property name="hbm2ddl.auto">update</property>
-        <property name="connection.pool_size">10</property>
+        <property name="hbm2ddl.auto">create</property>
+        <property name="connection.pool_size">100</property>
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
 
         <mapping class="model.person.Address"/>
         <mapping class="model.person.User"/>
+        <mapping class="model.products.ElectronicDevice"/>
+        <mapping class="model.products.ReadableItem"/>
+        <mapping class="model.products.Shoe"/>
+        <mapping class="model.Cart"/>
     </session-factory>
 </hibernate-configuration>

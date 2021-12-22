@@ -1,14 +1,24 @@
 package model.products;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import model.enums.BrandOfDevice;
 import model.enums.TypeOfProducts;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 /**
  * @author Negin Mousavi
  */
 @Data
+@Entity
+@NoArgsConstructor
+@Table(name = "electronic_devices")
 public class ElectronicDevice extends Product {
+    @Enumerated(value = EnumType.STRING)
     private BrandOfDevice brandOfDevice;
 
     public ElectronicDevice(int count, double cost, BrandOfDevice brandOfDevice) {

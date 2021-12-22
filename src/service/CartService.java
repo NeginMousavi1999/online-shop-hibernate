@@ -1,7 +1,7 @@
 package service;
 
 import dao.CartDao;
-import model.ProductSold;
+import model.Cart;
 import model.enums.CartStatus;
 import model.person.User;
 import model.products.Product;
@@ -23,9 +23,10 @@ public class CartService {
         return cartDao.findCountOfItemsByUserId(id);
     }
 
-    public void addNewProductForThisUser(User user, Product product, int count) throws SQLException, ClassNotFoundException {
-        cartDao.create(user, product, count);
-        reduceTheCountOfAvailableProduct(product, count);
+    public void addNewProductForThisUser(Cart cart) throws SQLException, ClassNotFoundException {
+//        cartDao.create(user, product, count);
+        cartDao.create(cart);
+//        reduceTheCountOfAvailableProduct(product, count);
     }
 
     public void reduceTheCountOfAvailableProduct(Product product, int count) throws SQLException, ClassNotFoundException {
@@ -36,20 +37,20 @@ public class CartService {
         productService.increaseTheCountOfProduct(product, count);
     }
 
-    public List<ProductSold> getNotCompletedCart(User user) throws SQLException {
+    public List<Cart> getNotCompletedCart(User user) throws SQLException {
         return cartDao.getCartsWithStatus(user, CartStatus.NOT_COMPLETED);
     }
 
-    public void removeCart(ProductSold productSold) throws SQLException, ClassNotFoundException {
-        cartDao.remove(productSold);
-        Product productInCart = productSold.getProducts().get(0);
+    public void removeCart(Cart cart) throws SQLException, ClassNotFoundException {
+        cartDao.remove(cart);
+        Product productInCart = cart.getProduct();
         System.out.println(productInCart.toString());
         Product product = productService.findProductById(productInCart.getTypeOfProducts().toString(),
                 productInCart.getId());
         increaseTheCountOfAvailableProduct(product, productInCart.getCount());
     }
 
-    public List<ProductSold> getCompletedCart(User user) throws SQLException {
+    public List<Cart> getCompletedCart(User user) throws SQLException {
         return cartDao.getCartsWithStatus(user, CartStatus.COMPLETED);
     }
 

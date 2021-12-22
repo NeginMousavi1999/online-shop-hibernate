@@ -50,4 +50,13 @@ public class UserDao extends BaseDao {
         result = query.list();
         return result;
     }
+
+    public User getAdmin() {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        User admin = session.get(User.class, 1);
+        transaction.commit();
+        session.close();
+        return admin;
+    }
 }

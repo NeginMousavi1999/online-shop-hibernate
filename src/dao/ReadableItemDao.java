@@ -1,6 +1,10 @@
 package dao;
 
+import model.products.ElectronicDevice;
 import model.products.ReadableItem;
+import model.products.Shoe;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,16 +16,19 @@ public class ReadableItemDao extends ProductsDao {
     public ReadableItemDao() throws ClassNotFoundException, SQLException {
     }
 
-    public void create(ReadableItem readableItem) throws SQLException {
-        if (connection != null) {
-            String sql = "INSERT INTO `shop`.`readable_items` (`cost`, `count`, `count_of_pages`, `type`)" +
-                    " VALUES (?, ?, ?, ?);";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setDouble(1, readableItem.getCost());
-            statement.setDouble(2, readableItem.getCost());
-            statement.setInt(3, readableItem.getCountOfPages());
-            statement.setString(4, readableItem.getTypeOfReadableItem().toString());
-            statement.executeUpdate();
-        }
+    public void create(ReadableItem readableItem) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.saveOrUpdate(readableItem);
+        transaction.commit();
+        session.close();
+    }
+
+    public void delete(ReadableItem readableItem) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.remove(readableItem);
+        transaction.commit();
+        session.close();
     }
 }

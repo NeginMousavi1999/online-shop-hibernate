@@ -1,6 +1,8 @@
 package service;
 
 import dao.UserDao;
+import model.enums.UserRole;
+import model.person.Address;
 import model.person.User;
 
 import java.sql.SQLException;
@@ -24,10 +26,6 @@ public class UserService {
         userDao.create(user);
     }
 
-/*    public User findMentionedUser(String username, String password) throws SQLException {
-        return userDao.findUser(username, password);
-    }*/
-
     public int findCountOfItemsInUserCart(User user) throws SQLException {
         return cartService.findCountOfItemsByUserId(user.getId());
     }
@@ -38,5 +36,23 @@ public class UserService {
 
     public List<User> returnAllUsers() throws SQLException {
         return userDao.readAll();
+    }
+
+    public void initAdmin() {
+        User admin = userDao.getAdmin();
+        if (admin==null)
+            createAdmin();
+    }
+
+    private void createAdmin() {
+        Address address = new Address();
+        address.setPostalCode("123456789");
+        User user = new User();
+        user.setUsername("admin");
+        user.setPassword("admin");
+        user.setUserRole(UserRole.ADMIN);
+        user.setAddress(address);
+        address.setUser(user);
+        userDao.create(user);
     }
 }

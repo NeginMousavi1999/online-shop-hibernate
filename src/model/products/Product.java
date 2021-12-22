@@ -4,19 +4,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import model.enums.TypeOfProducts;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author Negin Mousavi
  */
 @Data
+@NoArgsConstructor
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int id;
     protected int count;
     protected double cost;
+    @Enumerated(value = EnumType.STRING)
     protected TypeOfProducts typeOfProducts;
 
     public Product(int count, double cost) {

@@ -3,10 +3,13 @@ package dao;
 import model.enums.BrandOfDevice;
 import model.enums.TypeOfReadableItem;
 import model.enums.TypeOfShoe;
+import model.person.User;
 import model.products.ElectronicDevice;
 import model.products.Product;
 import model.products.ReadableItem;
 import model.products.Shoe;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,33 +24,15 @@ public abstract class ProductsDao extends BaseDao {
     public ProductsDao() throws ClassNotFoundException, SQLException {
     }
 
-    public List<Product> readAll(String tableName) throws SQLException {
-        List<Product> products = new ArrayList<>();
-        if (connection != null) {
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ;", tableName));
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                products.add(createAndReturn(resultSet, tableName));
-            }
-        }
-        return products;
-    }
-
-    public Product createAndReturn(ResultSet resultSet, String tableName) throws SQLException {
-        switch (tableName) {
-            case "electronic_devices":
-                return new ElectronicDevice(resultSet.getInt(1), resultSet.getInt(3), resultSet.getDouble(2),
-                        BrandOfDevice.valueOf(resultSet.getString(4)));
-
-            case "shoes":
-                return new Shoe(resultSet.getInt(1), resultSet.getInt(3), resultSet.getDouble(2), resultSet.getInt(4),
-                        resultSet.getString(5), TypeOfShoe.valueOf(resultSet.getString(6)));
-
-            case "readable_items":
-                return new ReadableItem(resultSet.getInt(1), resultSet.getInt(3), resultSet.getDouble(2), resultSet.getInt(4),
-                        TypeOfReadableItem.valueOf(resultSet.getString(5)));
-        }
-        return null;
+    public List<Product> readAll(String tableName) {
+        Session session = sessionFactory.openSession();
+        List<Product> result;
+        session.beginTransaction();
+        String hql = String.format("FROM %s", tableName);
+        System.out.println(hql);
+        Query<Product> query = session.createQuery(hql, Product.class);
+        result = query.list();
+        return result;
     }
 
     public void reduceTheCountOfProduct(Product product, int countToReduce) throws SQLException {
@@ -70,22 +55,19 @@ public abstract class ProductsDao extends BaseDao {
         }
     }
 
-    public Product findById(String tableName, int id) throws SQLException {
-        if (connection != null) {
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s WHERE id=?;", tableName));
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next())
-                return createAndReturn(resultSet, tableName.toLowerCase());
-        }
-        return null;
-    }
-
-    public void delete(String tableName, int id) throws SQLException {
-        if (connection != null) {
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s WHERE id=?;", tableName));
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+    public Product findById(String tableName, int id) {
+        Session session = sessionFactory.openSession();
+        List<Product> result;
+        session.beginTransaction();
+        String hql = String.format("from %s p where p.id=:id", tableName);
+        Query<Product> query = session.createQuery(hql, Product.class);
+        query.setParameter("id", id);
+        result = query.list();
+        assert result != null;
+        try {
+            return result.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
     }
 }

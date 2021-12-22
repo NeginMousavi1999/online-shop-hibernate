@@ -1,6 +1,10 @@
 package dao;
 
+import model.person.User;
+import model.products.ElectronicDevice;
 import model.products.Shoe;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -12,17 +16,19 @@ public class ShoeDao extends ProductsDao {
     public ShoeDao() throws ClassNotFoundException, SQLException {
     }
 
-    public void create(Shoe shoe) throws SQLException {
-        if (connection != null) {
-            String sql = "INSERT INTO `shop`.`shoes` (`cost`, `count`, `size`, `color`, `type`)" +
-                    " VALUES (?, ?, ?, ?, ?);";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setDouble(1, shoe.getCost());
-            statement.setDouble(2, shoe.getCount());
-            statement.setInt(3, shoe.getSizeOfShoe());
-            statement.setString(4, shoe.getColor());
-            statement.setString(5, shoe.getTypeOfShoe().toString());
-            statement.executeUpdate();
-        }
+    public void create(Shoe shoe) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.saveOrUpdate(shoe);
+        transaction.commit();
+        session.close();
+    }
+
+    public void delete(Shoe shoe) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.remove(shoe);
+        transaction.commit();
+        session.close();
     }
 }

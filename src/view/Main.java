@@ -1,11 +1,8 @@
 package view;
 
 import exceptions.UserInputValidation;
-import model.ProductSold;
-import model.enums.BrandOfDevice;
-import model.enums.TypeOfReadableItem;
-import model.enums.TypeOfShoe;
-import model.enums.UserRole;
+import model.Cart;
+import model.enums.*;
 import model.person.Address;
 import model.person.User;
 import model.products.ElectronicDevice;
@@ -38,6 +35,7 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
+        init();
         welcome();
         printStar();
         System.out.print("Enter your username: ");
@@ -48,6 +46,10 @@ public class Main {
         else {
             login(user);
         }
+    }
+
+    private static void init() {
+        userService.initAdmin();
     }
 
     private static void login(User user) throws SQLException, ClassNotFoundException, InterruptedException {
@@ -149,7 +151,7 @@ public class Main {
     }
 
     private static void removeElectronicProduct() throws InterruptedException, SQLException, ClassNotFoundException {
-        ElectronicDevice electronicDevice = (ElectronicDevice) getRemovingProduct("electronic_devices");
+        ElectronicDevice electronicDevice = (ElectronicDevice) getRemovingProduct("ElectronicDevice");
         if (electronicDevice == null)
             System.out.println("we have n't this product");
         else {
@@ -158,7 +160,7 @@ public class Main {
     }
 
     private static void removeReadableProduct() throws InterruptedException, SQLException, ClassNotFoundException {
-        ReadableItem readableItem = (ReadableItem) getRemovingProduct("readable_items");
+        ReadableItem readableItem = (ReadableItem) getRemovingProduct("ReadableItem");
         if (readableItem == null)
             System.out.println("we have n't this product");
         else {
@@ -167,7 +169,7 @@ public class Main {
     }
 
     private static void removeShoeProduct() throws InterruptedException, SQLException, ClassNotFoundException {
-        Shoe shoe = (Shoe) getRemovingProduct("shoes");
+        Shoe shoe = (Shoe) getRemovingProduct("Shoe");
         if (shoe == null)
             System.out.println("we have n't this product");
         else {
@@ -376,39 +378,38 @@ public class Main {
     }
 
     private static void showYourCarts(User user) throws SQLException {
-        List<ProductSold> notCompletedProductSold = returnNotCompletedCart(user);
-        List<ProductSold> completedProductSold = returnCompletedCart(user);
+        List<Cart> notCompletedCart = returnNotCompletedCart(user);
+        List<Cart> completedCart = returnCompletedCart(user);
         System.out.println("your past products sold:");
-        for (ProductSold productSold : completedProductSold) {
-            System.out.println(productSold.toString());
+        for (Cart cart : completedCart) {
+            System.out.println(cart.toString());
         }
         System.out.println("your now products sold:");
-        for (ProductSold productSold : notCompletedProductSold) {
-            System.out.println(productSold.toString());
+        for (Cart cart : notCompletedCart) {
+            System.out.println(cart.toString());
         }
     }
 
-    private static List<ProductSold> returnCompletedCart(User user) throws SQLException {
+    private static List<Cart> returnCompletedCart(User user) throws SQLException {
         return userService.accessToCartService().getCompletedCart(user);
     }
 
     private static void getTotalPriceOfCartsForThisUser(User user) throws SQLException {
-        List<ProductSold> productsSold = returnNotCompletedCart(user);
+        List<Cart> productsSold = returnNotCompletedCart(user);
         System.out.println("the total cost is: " + calTotalCost(productsSold));
     }
 
-    private static double calTotalCost(List<ProductSold> productsSold) {
+    private static double calTotalCost(List<Cart> productsSold) {
         double totalCost = 0;
-        for (ProductSold productSold : productsSold) {
-            for (int i = 0; i < productSold.getProducts().size(); i++) {
-                totalCost = totalCost + (productSold.getProducts().get(i).getCost() * productSold.getProducts().get(i).getCount());
-            }
+        for (Cart cart : productsSold) {
+            Product product = cart.getProduct();
+            totalCost = totalCost + (product.getCost() * product.getCount());
         }
         return totalCost;
     }
 
     private static void removeItemFromCart(User user) throws SQLException, InterruptedException, ClassNotFoundException {
-        List<ProductSold> productsSold = returnNotCompletedCart(user);
+        List<Cart> productsSold = returnNotCompletedCart(user);
         showCarts(productsSold);
         int numberToRemove;
         while (true) {
@@ -425,22 +426,22 @@ public class Main {
         removeCart(productsSold.get(numberToRemove - 1));
     }
 
-    private static void handleExceptionForIdToRemove(List<ProductSold> productsSold, int idToRemove) {
+    private static void handleExceptionForIdToRemove(List<Cart> productsSold, int idToRemove) {
         if (idToRemove > productsSold.size())
             throw new UserInputValidation("invalid input");
     }
 
-    private static void removeCart(ProductSold productSold) throws SQLException, ClassNotFoundException {
-        userService.accessToCartService().removeCart(productSold);
+    private static void removeCart(Cart cart) throws SQLException, ClassNotFoundException {
+        userService.accessToCartService().removeCart(cart);
     }
 
-    private static void showCarts(List<ProductSold> productsSold) {
-        for (ProductSold productSold : productsSold) {
-            System.out.println(productSold.toString());
+    private static void showCarts(List<Cart> productsSold) {
+        for (Cart cart : productsSold) {
+            System.out.println(cart.toString());
         }
     }
 
-    private static List<ProductSold> returnNotCompletedCart(User user) throws SQLException {
+    private static List<Cart> returnNotCompletedCart(User user) throws SQLException {
         return userService.accessToCartService().getNotCompletedCart(user);
     }
 
@@ -474,7 +475,12 @@ public class Main {
                 countOfOrder = getCountOfOrders();
             }
             System.out.println("***" + product.getTypeOfProducts().toString().toLowerCase());
-            userService.accessToCartService().addNewProductForThisUser(user, product, countOfOrder);
+            Cart cart = new Cart();
+            cart.setUser(user);
+            cart.setProduct(product);
+            cart.setCartStatus(CartStatus.NOT_COMPLETED);
+//            userService.accessToCartService().addNewProductForThisUser(user, product, countOfOrder);
+            userService.accessToCartService().addNewProductForThisUser(cart);
 
         } else
             System.out.println("Sorry... you can't add more than 5 items in your cart");

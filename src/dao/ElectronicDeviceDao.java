@@ -1,8 +1,9 @@
 package dao;
 
 import model.products.ElectronicDevice;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -12,14 +13,19 @@ public class ElectronicDeviceDao extends ProductsDao {
     public ElectronicDeviceDao() throws ClassNotFoundException, SQLException {
     }
 
-    public void create(ElectronicDevice electronicDevice) throws SQLException {
-        if (connection != null) {
-            String sql = "INSERT INTO `shop`.`electronic_devices` (`cost`, `count`, `brand`) VALUES (?, ?, ?);";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setDouble(1, electronicDevice.getCost());
-            statement.setDouble(2, electronicDevice.getCost());
-            statement.setString(3, electronicDevice.getBrandOfDevice().toString());
-            statement.executeUpdate();
-        }
+    public void create(ElectronicDevice electronicDevice) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.saveOrUpdate(electronicDevice);
+        transaction.commit();
+        session.close();
+    }
+
+    public void delete(ElectronicDevice electronicDevice) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.remove(electronicDevice);
+        transaction.commit();
+        session.close();
     }
 }

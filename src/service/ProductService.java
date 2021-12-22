@@ -24,12 +24,12 @@ public class ProductService {
     public ProductService() throws SQLException, ClassNotFoundException {
     }
 
-    public List<Product> returnAllProducts() throws SQLException {
+    public List<Product> returnAllProducts() {
 
         List<Product> products = new ArrayList<>();
-        products.addAll(electronicDeviceDao.readAll("electronic_devices"));
-        products.addAll(shoeDao.readAll("shoes"));
-        products.addAll(readableItemDao.readAll("readable_items"));
+        products.addAll(electronicDeviceDao.readAll("ElectronicDevice"));
+        products.addAll(shoeDao.readAll("Shoe"));
+        products.addAll(readableItemDao.readAll("ReadableItem"));
 
         return products;
     }
@@ -51,27 +51,27 @@ public class ProductService {
         };
     }
 
-    public void addNewElectronicProduct(ElectronicDevice electronicDevice) throws SQLException {
+    public void addNewElectronicProduct(ElectronicDevice electronicDevice) {
         electronicDeviceDao.create(electronicDevice);
     }
 
-    public void addNewReadableProduct(ReadableItem readableItem) throws SQLException {
+    public void addNewReadableProduct(ReadableItem readableItem) {
         readableItemDao.create(readableItem);
     }
 
-    public void addNewShoeProduct(Shoe shoe) throws SQLException {
+    public void addNewShoeProduct(Shoe shoe) {
         shoeDao.create(shoe);
     }
 
-    public void removeElectronicDevice(ElectronicDevice electronicDevice) throws SQLException {
-        electronicDeviceDao.delete("electronic_device", electronicDevice.getId());
+    public void removeElectronicDevice(ElectronicDevice electronicDevice) {
+        electronicDeviceDao.delete(electronicDevice);
     }
 
-    public void removeReadableItem(ReadableItem readableItem) throws SQLException {
-        readableItemDao.delete("readable_items", readableItem.getId());
+    public void removeReadableItem(ReadableItem readableItem) {
+        readableItemDao.delete(readableItem);
     }
 
-    public void removeShoe(Shoe shoe) throws SQLException {
-        shoeDao.delete("shoes", shoe.getId());
+    public void removeShoe(Shoe shoe) {
+        shoeDao.delete(shoe);
     }
 }

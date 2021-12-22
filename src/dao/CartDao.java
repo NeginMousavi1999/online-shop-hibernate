@@ -1,10 +1,12 @@
 package dao;
 
-import model.ProductSold;
+import model.Cart;
 import model.enums.CartStatus;
 import model.enums.TypeOfProducts;
 import model.person.User;
 import model.products.Product;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +33,17 @@ public class CartDao extends BaseDao {
         return count;
     }
 
-    public void create(User user, Product product, int count) throws SQLException {
+    public void create(Cart cart) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(cart);
+        session.saveOrUpdate(cart.getUser());
+        session.saveOrUpdate(cart.getProduct());
+        transaction.commit();
+        session.close();
+    }
+
+/*    public void create(User user, Product product, int count) throws SQLException {
         String sql;
         PreparedStatement statement;
         if (connection != null) {
@@ -56,7 +68,7 @@ public class CartDao extends BaseDao {
             }
             statement.executeUpdate();
         }
-    }
+    }*/
 
     private boolean isThisOrderExistsForThisUser(User user, Product product) throws SQLException {
         if (connection != null) {
@@ -71,15 +83,16 @@ public class CartDao extends BaseDao {
         return false;
     }
 
-    public ProductSold createCartAndReturn(ResultSet resultSet, CartStatus cartStatus) throws SQLException {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product(resultSet.getInt(5), resultSet.getInt(3), resultSet.getDouble(4),
-                TypeOfProducts.valueOf(resultSet.getString(2))));
-        return new ProductSold(resultSet.getInt(1), products, cartStatus);
+    public Cart createCartAndReturn(ResultSet resultSet, CartStatus cartStatus) throws SQLException {
+//        List<Product> products = new ArrayList<>();
+        Product product = new Product(resultSet.getInt(5), resultSet.getInt(3), resultSet.getDouble(4),
+                TypeOfProducts.valueOf(resultSet.getString(2)));
+//        products.add(e);
+        return new Cart(resultSet.getInt(1), product, cartStatus);
     }
 
-    public List<ProductSold> getCartsWithStatus(User user, CartStatus cartStatus) throws SQLException {
-        List<ProductSold> soldList = new ArrayList<>();
+    public List<Cart> getCartsWithStatus(User user, CartStatus cartStatus) throws SQLException {
+        List<Cart> soldList = new ArrayList<>();
         if (connection != null) {
             String sql = "SELECT id, product_type, count, cost, product_id_fk FROM carts WHERE user_id_fk=? AND status=?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -92,11 +105,11 @@ public class CartDao extends BaseDao {
         return soldList;
     }
 
-    public void remove(ProductSold productSold) throws SQLException {
+    public void remove(Cart cart) throws SQLException {
         if (connection != null) {
             String sql = "DELETE FROM carts WHERE id=?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, productSold.getId());
+            preparedStatement.setInt(1, cart.getId());
             preparedStatement.executeUpdate();
         }
     }
