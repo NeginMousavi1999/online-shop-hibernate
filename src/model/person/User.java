@@ -20,8 +20,8 @@ public class User {
     private int id;
     private String username;
     private String password;
-    @OneToOne
-    private Cart cart;
+    @OneToMany(mappedBy = "user")
+    private List<Cart> carts;
     @OneToOne
     private Address address;
     @Enumerated(EnumType.STRING)
@@ -47,7 +47,6 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", productSold=" + cart +
                 ", userRole=" + userRole +
                 '}';
     }

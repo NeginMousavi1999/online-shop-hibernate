@@ -478,9 +478,12 @@ public class Main {
             Cart cart = new Cart();
             cart.setUser(user);
             cart.setProduct(product);
+            cart.setCount(countOfOrder);
             cart.setCartStatus(CartStatus.NOT_COMPLETED);
+            user.getCarts().add(cart);
+            product.buy(countOfOrder);
 //            userService.accessToCartService().addNewProductForThisUser(user, product, countOfOrder);
-            userService.accessToCartService().addNewProductForThisUser(cart);
+            userService.accessToCartService().addNewCart(cart);
 
         } else
             System.out.println("Sorry... you can't add more than 5 items in your cart");

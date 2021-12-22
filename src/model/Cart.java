@@ -19,12 +19,13 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Product product;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User user;
     @Enumerated(value = EnumType.STRING)
     private CartStatus cartStatus;
+    private int count;
 
     public Cart(int id, Product product, CartStatus cartStatus) {
         this.id = id;

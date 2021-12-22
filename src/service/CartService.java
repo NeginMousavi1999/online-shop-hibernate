@@ -23,7 +23,7 @@ public class CartService {
         return cartDao.findCountOfItemsByUserId(id);
     }
 
-    public void addNewProductForThisUser(Cart cart) throws SQLException, ClassNotFoundException {
+    public void addNewCart(Cart cart) {
 //        cartDao.create(user, product, count);
         cartDao.create(cart);
 //        reduceTheCountOfAvailableProduct(product, count);
@@ -38,7 +38,7 @@ public class CartService {
     }
 
     public List<Cart> getNotCompletedCart(User user) throws SQLException {
-        return cartDao.getCartsWithStatus(user, CartStatus.NOT_COMPLETED);
+        return cartDao.getCartsByStatus(user, CartStatus.NOT_COMPLETED);
     }
 
     public void removeCart(Cart cart) throws SQLException, ClassNotFoundException {
@@ -51,7 +51,7 @@ public class CartService {
     }
 
     public List<Cart> getCompletedCart(User user) throws SQLException {
-        return cartDao.getCartsWithStatus(user, CartStatus.COMPLETED);
+        return cartDao.getCartsByStatus(user, CartStatus.COMPLETED);
     }
 
     public void confirmCarts(User user) throws SQLException {

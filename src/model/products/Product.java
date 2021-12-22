@@ -44,4 +44,8 @@ public class Product {
                 ", cost=" + cost + ' ' +
                 ", typeOfProducts=" + typeOfProducts.toString().toLowerCase() + ' ';
     }
+
+    public void buy(int count) {
+        this.count -= count;
+    }
 }

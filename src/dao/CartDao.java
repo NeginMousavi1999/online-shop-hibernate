@@ -37,50 +37,10 @@ public class CartDao extends BaseDao {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         session.save(cart);
-        session.saveOrUpdate(cart.getUser());
-        session.saveOrUpdate(cart.getProduct());
+        session.merge(cart.getProduct());
+        session.merge(cart.getUser());
         transaction.commit();
         session.close();
-    }
-
-/*    public void create(User user, Product product, int count) throws SQLException {
-        String sql;
-        PreparedStatement statement;
-        if (connection != null) {
-            if (isThisOrderExistsForThisUser(user, product)) {
-                sql = "UPDATE carts SET count=count+? WHERE user_id_fk=? AND product_id_fk=? AND product_type=? AND status=\"NOT_COMPLETED\";";
-                statement = connection.prepareStatement(sql);
-                statement.setInt(1, count);
-                statement.setInt(2, user.getId());
-                statement.setInt(3, product.getId());
-                statement.setString(4, product.getTypeOfProducts().toString());
-
-            } else {
-                sql = "INSERT INTO `shop`.`carts` (`user_id_fk`, `product_id_fk`, `product_type`, `count`, `cost`, `status`) " +
-                        "VALUES (?, ?, ?, ?, ?, ?);";
-                statement = connection.prepareStatement(sql);
-                statement.setInt(1, user.getId());
-                statement.setInt(2, product.getId());
-                statement.setString(3, product.getTypeOfProducts().toString());
-                statement.setInt(4, count);
-                statement.setDouble(5, product.getCost());
-                statement.setString(6, "NOT_COMPLETED");
-            }
-            statement.executeUpdate();
-        }
-    }*/
-
-    private boolean isThisOrderExistsForThisUser(User user, Product product) throws SQLException {
-        if (connection != null) {
-            String sql = "SELECT * FROM carts WHERE user_id_fk=? AND product_id_fk=? AND product_type=? AND status=\"NOT_COMPLETED\"";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setInt(2, product.getId());
-            preparedStatement.setString(3, product.getTypeOfProducts().toString());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
-        }
-        return false;
     }
 
     public Cart createCartAndReturn(ResultSet resultSet, CartStatus cartStatus) throws SQLException {
@@ -91,7 +51,7 @@ public class CartDao extends BaseDao {
         return new Cart(resultSet.getInt(1), product, cartStatus);
     }
 
-    public List<Cart> getCartsWithStatus(User user, CartStatus cartStatus) throws SQLException {
+    public List<Cart> getCartsByStatus(User user, CartStatus cartStatus) throws SQLException {
         List<Cart> soldList = new ArrayList<>();
         if (connection != null) {
             String sql = "SELECT id, product_type, count, cost, product_id_fk FROM carts WHERE user_id_fk=? AND status=?;";
@@ -106,12 +66,11 @@ public class CartDao extends BaseDao {
     }
 
     public void remove(Cart cart) throws SQLException {
-        if (connection != null) {
-            String sql = "DELETE FROM carts WHERE id=?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, cart.getId());
-            preparedStatement.executeUpdate();
-        }
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.remove(cart);
+        transaction.commit();
+        session.close();
     }
 
     public void updateStatus(User user) throws SQLException {
